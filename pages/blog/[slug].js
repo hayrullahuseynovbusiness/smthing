@@ -63,7 +63,7 @@ export async function getServerSideProps({ query }) {
     )
     `
     )
-    .eq("slug", query.slug);
+    .eq("slug", query.slug).single();
   return {
     props: {
       data,
