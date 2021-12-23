@@ -1,7 +1,8 @@
 import { client } from "../../utils/supabase";
 import moment from "moment";
+import Markdown from "markdown-to-jsx";
+import Comment from "../../components/Comment";
 function SingleBlogArticle({ data }) {
-  console.log(data);
   return (
     <div className="w-full max-w-2xl mx-auto px-4">
       <div className="prose dark:prose-invert mt-6 prose-h1:m-0 p-0">
@@ -11,9 +12,9 @@ function SingleBlogArticle({ data }) {
             Hayrulla Huseynov /{" "}
             {moment(data?.created_at).format("DD MMM, YYYY")}
           </span>
-          <span>12 min read • {data?.views} views</span>
+          <span>{data?.views} views</span>
         </div>
-        <p>{data.content} </p>
+        <Markdown>{data.content} </Markdown>
       </div>
       <div className="flex flex-col p-6 bg-blue-50 dark:bg-gray-900 dark:text-white border dark:border-gray-900 border-blue-200 my-6">
         <h2 className="text-2xl font-bold">Add a comment</h2>
@@ -39,6 +40,11 @@ function SingleBlogArticle({ data }) {
           Your information is only used to display your name and reply by email.
         </span>
       </div>
+      <div className="mt-5">
+        {data.comments.map((comment) => (
+          <Comment {...comment} />
+        ))}
+      </div>
     </div>
   );
 }
@@ -63,7 +69,8 @@ export async function getServerSideProps({ query }) {
     )
     `
     )
-    .eq("slug", query.slug);
+    .eq("slug", query.slug)
+    .single();
   return {
     props: {
       data,
