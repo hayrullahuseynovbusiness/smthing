@@ -62,6 +62,10 @@ function SingleBlogArticle({ data }) {
 export default SingleBlogArticle;
 export async function getStaticPaths() {
   const { data, error } = await client.from("posts").select();
+  return {
+    paths: data.map((p) => ({ params: { slug: p.slug } })),
+    fallback: false,
+  };
 }
 export async function getStaticProps({ slug }) {
   await client.rpc("increment", { slug_text: slug });
