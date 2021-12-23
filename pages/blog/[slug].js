@@ -1,8 +1,7 @@
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { client } from "../../utils/supabase";
 import moment from "moment";
 import Comment from "../../components/Comment";
+import ContentBox from "../../components/ContentBox";
 function SingleBlogArticle({ data }) {
   return (
     <div className="w-full max-w-2xl mx-auto px-4">
@@ -15,9 +14,7 @@ function SingleBlogArticle({ data }) {
           </span>
           <span>{data?.views} views</span>
         </div>
-        <div>
-          <ReactMarkdown children={data?.content} remarkPlugins={[remarkGfm]} />{" "}
-        </div>
+        <ContentBox markdown={data?.content} />
       </div>
       <div className="flex flex-col p-6 bg-blue-50 dark:bg-gray-900 dark:text-white border dark:border-gray-900 border-blue-200 my-6">
         <h2 className="text-2xl font-bold">Add a comment</h2>
