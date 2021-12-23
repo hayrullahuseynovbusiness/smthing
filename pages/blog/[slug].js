@@ -1,6 +1,6 @@
 import { client } from "../../utils/supabase";
 import moment from "moment";
-import Markdown from "markdown-to-jsx";
+import { compiler } from "markdown-to-jsx";
 import Comment from "../../components/Comment";
 function SingleBlogArticle({ data }) {
   return (
@@ -14,7 +14,7 @@ function SingleBlogArticle({ data }) {
           </span>
           <span>{data?.views} views</span>
         </div>
-        <Markdown>{data.content} </Markdown>
+        <div>{compiler(data?.content)} </div>
       </div>
       <div className="flex flex-col p-6 bg-blue-50 dark:bg-gray-900 dark:text-white border dark:border-gray-900 border-blue-200 my-6">
         <h2 className="text-2xl font-bold">Add a comment</h2>
@@ -41,7 +41,7 @@ function SingleBlogArticle({ data }) {
         </span>
       </div>
       <div className="mt-5">
-        {data.comments.map((comment) => (
+        {data?.comments.map((comment) => (
           <Comment {...comment} />
         ))}
       </div>
@@ -50,9 +50,15 @@ function SingleBlogArticle({ data }) {
 }
 
 export default SingleBlogArticle;
-
-export async function getServerSideProps({ query }) {
-  await client.rpc("increment", { slug_text: query.slug });
+export async function getStaticPaths() {
+  const { data, error } = await client.from("posts").select();
+  return {
+    paths: data.map((p) => ({ params: { slug: p.slug } })),
+    fallback: false,
+  };
+}
+export async function getStaticProps({ slug }) {
+  await client.rpc("increment", { slug_text: slug });
   const { data, error } = await client
     .from("posts")
     .select(
@@ -69,7 +75,7 @@ export async function getServerSideProps({ query }) {
     )
     `
     )
-    .eq("slug", query.slug)
+    .eq("slug", slug)
     .single();
   return {
     props: {
