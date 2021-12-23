@@ -61,30 +61,57 @@ function SingleBlogArticle({ data }) {
 }
 
 export default SingleBlogArticle;
-export async function getStaticPaths() {
-  const { data, error } = await client.from("posts").select();
-  return {
-    paths: data.map((p) => ({ params: { slug: p.slug } })),
-    fallback: false,
-  };
-}
-export async function getStaticProps({ slug }) {
+// export async function getStaticPaths() {
+//   const { data, error } = await client.from("posts").select();
+//   return {
+//     paths: data.map((p) => ({ params: { slug: p.slug } })),
+//     fallback: false,
+//   };
+// }
+// export async function getStaticProps({ slug }) {
+//   await client.rpc("increment", { slug_text: slug });
+//   const { data, error } = await client
+//     .from("posts")
+//     .select(
+//       `
+//     title,
+//     content,
+//     created_at,
+//     views,
+//     comments(
+//         id,
+//         created_at,
+//         comment,
+//         user_name
+//     )
+//     `
+//     )
+//     .eq("slug", slug)
+//     .single();
+//   return {
+//     props: {
+//       data,
+//     },
+//   };
+// }
+export async function getServerSideProps({ query }) {
+  const { slug } = query;
   await client.rpc("increment", { slug_text: slug });
   const { data, error } = await client
     .from("posts")
     .select(
       `
-    title,
-    content,
-    created_at,
-    views,
-    comments(
-        id,
-        created_at,
-        comment,
-        user_name
-    )
-    `
+      title,
+      content,
+      created_at,
+      views,
+      comments(
+          id,
+          created_at,
+          comment,
+          user_name
+      )
+      `
     )
     .eq("slug", slug)
     .single();
