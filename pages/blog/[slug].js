@@ -1,6 +1,7 @@
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { client } from "../../utils/supabase";
 import moment from "moment";
-import { compiler } from "markdown-to-jsx";
 import Comment from "../../components/Comment";
 function SingleBlogArticle({ data }) {
   return (
@@ -14,7 +15,9 @@ function SingleBlogArticle({ data }) {
           </span>
           <span>{data?.views} views</span>
         </div>
-        <div>{compiler(data?.content)} </div>
+        <div>
+          <ReactMarkdown children={data?.content} remarkPlugins={[remarkGfm]} />{" "}
+        </div>
       </div>
       <div className="flex flex-col p-6 bg-blue-50 dark:bg-gray-900 dark:text-white border dark:border-gray-900 border-blue-200 my-6">
         <h2 className="text-2xl font-bold">Add a comment</h2>
@@ -52,10 +55,6 @@ function SingleBlogArticle({ data }) {
 export default SingleBlogArticle;
 export async function getStaticPaths() {
   const { data, error } = await client.from("posts").select();
-  return {
-    paths: data.map((p) => ({ params: { slug: p.slug } })),
-    fallback: false,
-  };
 }
 export async function getStaticProps({ slug }) {
   await client.rpc("increment", { slug_text: slug });
