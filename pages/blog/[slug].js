@@ -11,6 +11,7 @@ import { client } from "../../utils/supabase";
 import moment from "moment";
 import Comment from "../../components/Comment";
 function SingleBlogArticle({ data }) {
+  console.log(data);
   return (
     <div className="w-full max-w-2xl mx-auto px-4">
       <div className="prose dark:prose-invert mt-6 prose-h1:m-0 p-0">
